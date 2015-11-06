@@ -1,0 +1,4 @@
+ajouter lib/*.jar au classpath
+
+ajouter en argument de VM avant de lancer les tests
+-Djava.system.class.loader=sacha.reflect.classloading.PermissiveClassLoader
