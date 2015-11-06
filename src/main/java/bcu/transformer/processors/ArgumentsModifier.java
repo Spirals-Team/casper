@@ -93,7 +93,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					}
 					tmpref.setActualTypeArguments(null);
 					
-					invoc.setGenericTypes(Arrays.asList(new CtTypeReference[]{tmpref}));
+					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 					
 					var.setDefaultExpression(invoc);
 					
@@ -141,7 +141,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					}
 					tmpref.setActualTypeArguments(null);
 					
-					invoc.setGenericTypes(Arrays.asList(new CtTypeReference[]{tmpref}));
+					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 					
 					CtAssignment assignment = getFactory().Core().createAssignment();
 					assignment.setAssigned(variable);

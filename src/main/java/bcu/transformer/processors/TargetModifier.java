@@ -7,11 +7,12 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import bcu.utils.NameResolver;
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtSuperAccess;
+import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -20,40 +21,37 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtFieldAccessImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
 
-@SuppressWarnings("rawtypes")
-public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
+@SuppressWarnings({"unchecked","rawtypes"})
+public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
+
 	private int i=0;
+	private int j=0;
 	@Override
 	public void processingDone() {
-		System.out.println("2-->"+i);
+		System.out.println("0-->"+i +" (failed:"+j+")");
 	}
-	@SuppressWarnings("unchecked")
 	@Override
-	public void process(CtAssignment element) {
-		try{
-		if(element.getAssigned().getType().isPrimitive() && element.getAssignment()==null)
+	public void process(CtTargetedExpression element) {
+		if(element.getTarget()==null)
 			return;
-		if(element.getAssignment() instanceof CtLiteral)
-			if(!(((CtLiteral)element.getAssignment()).getValue() == null))
-				return;
-		}catch(NullPointerException npe){
-//			System.out.println("cannot get element type?");
+		if(element.getTarget() instanceof CtThisAccess 
+				|| element.getTarget() instanceof CtSuperAccess)
 			return;
-		}
-		i++;
-		String sign="???";
+		String sign=NameResolver.getName(element.getTarget());
 		try{
-			NameResolver.getName(element.getAssigned());
-		}catch(NullPointerException npe){
-			System.err.println("cannot get signature");
-		}
-		try{
+			i++;
 			CtExecutableReference execref = getFactory().Core().createExecutableReference();
-			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.AssignResolver"));
-			execref.setSimpleName("setAssigned");
+			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.CallChecker"));
+			execref.setSimpleName("isCalled");
 			execref.setStatic(true);
 			
-			CtTypeReference tmp = element.getAssigned().getType();
+			CtTypeReference tmp = element.getTarget().getType();
+			if(sign.equals("class")){
+				tmp = getFactory().Type().createReference(Class.class);
+			}
+			if(element.getTarget().getTypeCasts()!=null && element.getTarget().getTypeCasts().size()>0){
+				tmp = (CtTypeReference) element.getTarget().getTypeCasts().get(0);
+			}
 			
 			CtExpression arg = null;
 			if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
@@ -62,9 +60,9 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 			}else{
 				CtFieldReference ctfe = new CtFieldReferenceImpl();
 				ctfe.setSimpleName("class");
-				ctfe.setDeclaringType(element.getAssigned().getType().box());
+				ctfe.setDeclaringType(tmp.box());
 				
-				arg = new CtFieldAccessImpl();
+				arg = getFactory().Core().createVariableAccess();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
 			
@@ -72,23 +70,24 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
 			location.setType(getFactory().Type().createReference(String.class));
 			
-			//remove generic
-			CtTypeReference tmpref = getFactory().Core().clone(element.getAssigned().getType());
+			CtInvocation invoc = getFactory().Core().createInvocation();
+			invoc.setExecutable(execref);
+			invoc.setArguments(Arrays.asList(new CtExpression[]{element.getTarget(),arg,location}));
+			
+			CtTypeReference tmpref = getFactory().Core().clone(tmp);
 			if(!(tmpref instanceof CtArrayTypeReference)){
 				tmpref = tmpref.box();
 			}else if(((CtArrayTypeReference)tmpref).getComponentType()!=null){
 				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(null);
 			}
-			tmpref.setActualTypeArguments(null);
+//			tmpref.setActualTypeArguments(null);
 			
-			CtInvocation invoc = getFactory().Core().createInvocation();
-			invoc.setExecutable(execref);
-			invoc.setArguments(Arrays.asList(new CtExpression[]{element.getAssignment(), arg, location}));
-			invoc.setGenericTypes(Arrays.asList(new CtTypeReference[]{tmpref}));
+			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 			
-			element.setAssignment(invoc);
+			element.setTarget((CtExpression)invoc);
 		}catch(Throwable t){
-			System.err.println("cannot resolve an assign");
+			j++;
+//			System.err.println("cannot resolve an assign");
 		}
 	}
 
