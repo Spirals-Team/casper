@@ -17,7 +17,7 @@ public class AssignResolver {
 			try{
 				if (initialValue instanceof NullGhost){
 //					try{
-					((NullGhost)initialValue).addData(location);
+					((NullGhost)initialValue).addData("assigned null to "+ location);
 //					}catch(NullPointerException npe){
 //						rteu
 //					}
@@ -42,7 +42,7 @@ public class AssignResolver {
 		T res=(T) NullInstanceManager.getNullInstance(clazz);
 		inside=false;
 		if (res instanceof NullGhost){
-			((NullGhost)res).addData(location);
+			((NullGhost)res).addData("assigned null to "+location);
 		}
 		return res;
 		

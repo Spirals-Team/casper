@@ -188,6 +188,7 @@ public class PermissiveClassLoader extends ClassLoader{
 	 * @param b 
 	 */
 	private Class loadModifiedClass(String name, boolean b) {
+		System.err.println(name);		
 		String newName = name+"Nullified";
 		if(classes.containsKey(newName)){
 			return classes.get(newName);

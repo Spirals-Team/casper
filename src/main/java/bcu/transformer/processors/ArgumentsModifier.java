@@ -1,5 +1,6 @@
 package bcu.transformer.processors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,9 +90,9 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					if(!(tmpref instanceof CtArrayTypeReference)){
 						tmpref = tmpref.box();
 					}else if(((CtArrayTypeReference)tmpref).getComponentType()!=null){
-						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(null);
+						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					}
-					tmpref.setActualTypeArguments(null);
+					tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					
 					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 					
@@ -137,9 +138,9 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					if(!(tmpref instanceof CtArrayTypeReference)){
 						tmpref = tmpref.box();
 					}else if(((CtArrayTypeReference)tmpref).getComponentType()!=null){
-						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(null);
+						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					}
-					tmpref.setActualTypeArguments(null);
+					tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					
 					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 					

@@ -5,7 +5,11 @@
 	<version>0.1</version>
 	<name>casper</name>
 	<dependencies>
-		<dependency>
+<dependency>
+    <groupId>org.mdkt.compiler</groupId>
+    <artifactId>InMemoryJavaCompiler</artifactId>
+    <version>1.2</version>
+</dependency>		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>

@@ -29,25 +29,33 @@ public class DeluxeNPE extends NullPointerException {
 
 	@Override
 	public String toString() {
-//		try{
-		return super.toString()+" from "+ data.getFirst()+"\n"+NullInstanceManager.printNb();
+		String s="\n";
+		for (int i = 0;i<data.nbSteps();i++) {
+			s+=""+data.get(i)+"\n";
+		}
+		s+="throws NPE";
+		return s;
+		//		try{
+		//return super.toString()+" from "+ data.getFirst()+"\n"+NullInstanceManager.printNb();
 //		}catch(Throwable t){
 //			t.printStackTrace(System.out);
 //			return "cannot provide data";
 //		}
 	}
 	
-	@Override
-	public synchronized Throwable getCause() {
-		Null e = null;
-		for (int i = 0;i<data.nbSteps();i++) {
-			e =new Null("from "+data.get(i),e);
-			try{
-				e.setStackTrace(data.getStack(i));
-			}catch(NullPointerException npe){
-				System.err.println("cannot set the creation trace");
-			}
-		}
-		return e;
-	}
+//	@Override
+//	public synchronized Throwable getCause() {
+//		Null e = null;
+//		for (int i = 0;i<data.nbSteps();i++) {
+//			e =new Null("from "+data.get(i),e);
+//			try{
+//				e.setStackTrace(data.getStack(i));
+//			}catch(NullPointerException npe){
+//				System.err.println("cannot set the creation trace");
+//			}
+//		}
+//		return e;
+//	}
+	
+	
 }

@@ -1,5 +1,6 @@
 package bcu.transformer.processors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -99,9 +100,9 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 			if(!(tmpref instanceof CtArrayTypeReference)){
 				tmpref = tmpref.box();
 			}else if(((CtArrayTypeReference)tmpref).getComponentType()!=null){
-				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(null);
+				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			}
-			tmpref.setActualTypeArguments(null);
+			tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 			element.setDefaultExpression(invoc);

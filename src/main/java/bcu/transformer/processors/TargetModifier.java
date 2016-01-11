@@ -1,11 +1,11 @@
 package bcu.transformer.processors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import bcu.utils.NameResolver;
-
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -78,9 +78,9 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			if(!(tmpref instanceof CtArrayTypeReference)){
 				tmpref = tmpref.box();
 			}else if(((CtArrayTypeReference)tmpref).getComponentType()!=null){
-				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(null);
+				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			}
-//			tmpref.setActualTypeArguments(null);
+//			tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 			

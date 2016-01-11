@@ -16,6 +16,8 @@ Casper: Debugging Null Dereferences with Ghosts and Causality Traces (Benoit Cor
 }
 ```
 
+The evaluation dataset is at <https://github.com/Spirals-Team/npe-dataset/>
+
 ''mvn compile''
 
 You have to use a custom classloader
