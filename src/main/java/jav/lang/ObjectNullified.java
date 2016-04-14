@@ -2,8 +2,9 @@ package jav.lang;
 
 import bcornu.nullmode.DebugInfo;
 import bcornu.nullmode.DeluxeNPE;
+import bcornu.nullmode.NullGhost;
 
-public class ObjectNullified {
+public class ObjectNullified implements NullGhost {
 
 
 	private DebugInfo data = new DebugInfo();

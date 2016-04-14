@@ -40,7 +40,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 		i++;
 		String sign="???";
 		try{
-			sign = element.getSimpleName();
+			sign = element.getSimpleName()+ " "+ Helpers.nicePositionString(element.getPosition());
 		}catch(Throwable npe){
 			System.err.println("cannot get signature");
 		}
@@ -66,11 +66,13 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 				return;
 		}
 		try{
+			System.out.println(element.getDefaultExpression().toString());
 			CtExecutableReference execref = getFactory().Core().createExecutableReference();
 			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.AssignResolver"));
 			execref.setSimpleName("setAssigned");
 			execref.setStatic(true);
 			
+			System.out.println(execref);
 			CtTypeReference tmp = element.getType();
 			
 			CtExpression arg = null;
@@ -87,7 +89,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 			}
 
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			location.setValue(""+StringEscapeUtils.escapeJava(sign)+"");
 			location.setType(getFactory().Type().createReference(String.class));
 			
 			CtExpression assignment = element.getDefaultExpression();

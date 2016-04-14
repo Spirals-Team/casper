@@ -9,12 +9,15 @@ import initialization.on.Null;
 @SuppressWarnings("serial")
 public class DeluxeNPE extends NullPointerException {
 
-	private DebugInfo data;
+	public DebugInfo data;
+
+	private StackTraceElement lastStackTraceElement;
 
 	public DeluxeNPE(DebugInfo data) {
 		this.data = data;
 
 		StackTraceElement[] old = super.getStackTrace();
+		lastStackTraceElement= old[1];
 		StackTraceElement[] res = new StackTraceElement[old.length-1];
 		for (int i =1;i<old.length;i++) {
 			res[i-1]=old[i];
@@ -29,11 +32,17 @@ public class DeluxeNPE extends NullPointerException {
 
 	@Override
 	public String toString() {
-		String s="\n";
+		if (data == null) {
+			return super.toString();
+		}
+		String s="";
 		for (int i = 0;i<data.nbSteps();i++) {
 			s+=""+data.get(i)+"\n";
 		}
-		s+="throws NPE";
+		
+		// the line number of this one is the one of the transformed file
+		s+="throws NPE "+"at "+lastStackTraceElement.toString();
+		
 		return s;
 		//		try{
 		//return super.toString()+" from "+ data.getFirst()+"\n"+NullInstanceManager.printNb();

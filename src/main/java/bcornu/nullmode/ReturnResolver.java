@@ -9,7 +9,7 @@ public class ReturnResolver {
 		if(initialValue!=null){
 			try{
 				if (initialValue instanceof NullGhost){
-					((NullGhost)initialValue).addData("returned null at "+location);
+					((NullGhost)initialValue).addData("returned null in method "+location);
 				}
 				return (T)initialValue;
 			}catch(ClassCastException cce){
@@ -27,7 +27,7 @@ public class ReturnResolver {
 		T res=(T) NullInstanceManager.getNullInstance(clazz);
 		inside=false;
 		if (res instanceof NullGhost){
-			((NullGhost)res).addData("returned null at "+location);
+			((NullGhost)res).addData("returned null in method "+location);
 		}
 		return res;
 		

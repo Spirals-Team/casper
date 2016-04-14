@@ -38,12 +38,17 @@ public class AssignResolver {
 			System.err.println("assign generic clazz?");
 			return null;
 		}
+		
 		inside=true;
 		T res=(T) NullInstanceManager.getNullInstance(clazz);
 		inside=false;
-		if (res instanceof NullGhost){
-			((NullGhost)res).addData("assigned null to "+location);
+		
+		if (res == null || !(res instanceof NullGhost)){
+			return null;
+			//throw new RuntimeException("failed to create null ghost "+clazz.toString());
+			
 		}
+		((NullGhost)res).addData("assigned null to "+location);
 		return res;
 		
 	}

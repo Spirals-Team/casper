@@ -45,7 +45,7 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 		String sign="???";
 		i++;
 		try{
-			sign = element.getSimpleName();
+			sign = element.getSimpleName()+ " "+ Helpers.nicePositionString(element.getPosition());
 		}catch(Throwable npe){
 			System.err.println("cannot get signature");
 		}
@@ -80,7 +80,7 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 			}
 
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			location.setValue(""+StringEscapeUtils.escapeJava(sign)+"");
 			location.setType(getFactory().Type().createReference(String.class));
 
 			CtExpression assignment = element.getDefaultExpression();

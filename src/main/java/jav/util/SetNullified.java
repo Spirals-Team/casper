@@ -8,7 +8,8 @@ import bcornu.nullmode.DeluxeNPE;
 import bcornu.nullmode.NullGhost;
 
 @SuppressWarnings("rawtypes")
-public class SetNullified implements java.util.Set, NullGhost{
+
+public class SetNullified implements java.util.Set, NullGhost {
 
 private DebugInfo data = new DebugInfo();
 	
@@ -104,7 +105,7 @@ private DebugInfo data = new DebugInfo();
 	public String toString() {
 		throw new DeluxeNPE(data);
 	}
-	@Override
+
 	public void throwDNPE() {
 		throw new DeluxeNPE(data);
 	}

@@ -5,21 +5,21 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import bcu.utils.NameResolver;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtFieldAccessImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
+import bcu.utils.NameResolver;
 
 @SuppressWarnings({"unchecked","rawtypes"})
 public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
@@ -28,17 +28,21 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 	private int j=0;
 	@Override
 	public void processingDone() {
-		System.out.println("0-->"+i +" (failed:"+j+")");
+		System.out.println("TargetModifier -->"+i +" (failed:"+j+")");
 	}
 	@Override
 	public void process(CtTargetedExpression element) {
 		if(element.getTarget()==null)
 			return;
 		if(element.getTarget() instanceof CtThisAccess 
-				|| element.getTarget() instanceof CtSuperAccess)
+				|| element.getTarget() instanceof CtSuperAccess
+				|| element instanceof CtInvocation // those are handled by the GhostClass
+				)
 			return;
 		String sign=NameResolver.getName(element.getTarget());
 		try{
+			System.out.println(element);
+
 			i++;
 			CtExecutableReference execref = getFactory().Core().createExecutableReference();
 			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.CallChecker"));
@@ -62,12 +66,17 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(tmp.box());
 				
-				arg = getFactory().Core().createVariableAccess();
-				((CtFieldAccessImpl) arg).setVariable(ctfe);
+				arg = getFactory().Core().createFieldRead();
+//				arg = new CtFieldAccessImpl();
+				((CtFieldAccess) arg).setVariable(ctfe);
 			}
 			
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			
+			//location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			location.setValue(Helpers.nicePositionString(element.getPosition()));
+
+			
 			location.setType(getFactory().Type().createReference(String.class));
 			
 			CtInvocation invoc = getFactory().Core().createInvocation();
@@ -87,7 +96,7 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			element.setTarget((CtExpression)invoc);
 		}catch(Throwable t){
 			j++;
-//			System.err.println("cannot resolve an assign");
+			System.err.println(t.toString());
 		}
 	}
 

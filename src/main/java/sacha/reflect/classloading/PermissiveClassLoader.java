@@ -1,5 +1,10 @@
 package sacha.reflect.classloading;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import jav.lang.ObjectNullified;
+import jav.util.SetNullified;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -33,6 +39,7 @@ public class PermissiveClassLoader extends ClassLoader{
 	 * accessible classes
 	 */
 	Map<String,Class<?>> classes = new HashMap<>();
+	
 	/**
 	 * classes not accessible yet
 	 */
@@ -45,6 +52,11 @@ public class PermissiveClassLoader extends ClassLoader{
 			addURL(classpathElement);
 		}
 		classes.put("sacha.reflect.classloading.PermissiveClassLoader", this.getClass());
+		
+		String o;
+		
+		hiddenClasses.put("java.lang.Object", ObjectNullified.class);		
+		hiddenClasses.put("java.collections.Set", SetNullified.class);		
 	}
 	
 	/**
@@ -59,27 +71,36 @@ public class PermissiveClassLoader extends ClassLoader{
 		return Arrays.asList(classPath.split(separator));
 	}
 	
-	/**
-	 * DO NOT USE
-	 */
-	@Override
-	protected Class<?> findClass(final String name)
-			throws ClassNotFoundException {
-		throw new ClassNotFoundException("do not use this method on this classloader");
-	}
+//	/**
+//	 * DO NOT USE
+//	 */
+//	@Override
+//	protected Class<?> findClass(final String name)
+//			throws ClassNotFoundException {
+//		throw new ClassNotFoundException("do not use this method on this classloader");
+//	}
+//	
 	
+	public Class getModifiedClass(String qualifiedName) {
+		return classes.get(qualifiedName);
+	}
 	/**
-	 * load the class with the given name.
+	 * load the class with the given name and removes all final
 	 * remove the final keywords on class and methods
 	 */
 	@Override
-	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		if(classes.containsKey(name)){
-			return classes.get(name);
+	public Class<?> loadClass(String classQualifiedName) throws ClassNotFoundException {
+		
+		// already transformed
+		if(classes.containsKey(classQualifiedName)){
+			return classes.get(classQualifiedName);
 		}
-		if(hiddenClasses.containsKey(name)){
-			return hiddenClasses.get(name);
+		
+		// we don't ghostify the framework itself
+		if (classQualifiedName.startsWith("bcornu")) {
+			return super.loadClass(classQualifiedName);
 		}
+		
         try {
 			for (String url : urls) {
 				File file = new File(url);
@@ -88,7 +109,7 @@ public class PermissiveClassLoader extends ClassLoader{
 					urls.remove(url);
 					continue;
 				}else if(file.getName().endsWith(".jar")){
-					String tmpName = name.replaceAll("\\.", "/")+".class";
+					String tmpName = classQualifiedName.replaceAll("\\.", "/")+".class";
 					URL tmpUrl = new URL("jar:file:"+file.getAbsolutePath()+"!/"+tmpName);
 					try{
 						InputStream is = tmpUrl.openStream();
@@ -98,15 +119,15 @@ public class PermissiveClassLoader extends ClassLoader{
 						FinalRemover fr = new FinalRemover(cw);
 						classReader.accept(fr, 0);
 						
-						Class<?> res = defineClass(name, cw.toByteArray());
-						classes.put(name, res);
+						Class<?> res = defineClass(classQualifiedName, cw.toByteArray());
+						classes.put(classQualifiedName, res);
 //						System.out.println("own jar class loaded :"+name);
 						return res;
 					}catch(FileNotFoundException e){
 						continue;
 					}
 				}else if(file.isDirectory()){
-					String tmpName = name.replaceAll("\\.", "/")+".class";
+					String tmpName = classQualifiedName.replaceAll("\\.", "/")+".class";
 					File classFile = new File(file,tmpName);
 					if( ! classFile.exists()){
 						continue;
@@ -118,20 +139,21 @@ public class PermissiveClassLoader extends ClassLoader{
 					FinalRemover fr = new FinalRemover(cw);
 					classReader.accept(fr, 0);
 					
-					Class<?> res = defineClass(name, cw.toByteArray());
-					classes.put(name, res);
-//					System.out.println("own class loaded :"+name);
+					System.err.println("class loading with final remover :"+classQualifiedName);
+					Class<?> res = defineClass(classQualifiedName, cw.toByteArray());
+					classes.put(classQualifiedName, res);
 					return res;
 				}else{
 					System.err.println("what is that? :"+file.getAbsolutePath());
 					continue;
 				}
-			}
+			} // end for
 			
-			Class<?> res = super.loadClass(name);
-			hiddenClasses.put(name, res);
+			
+				return super.loadClass(classQualifiedName);
+
 //			System.err.println("not found :"+name);
-			return res;
+//			throw new ClassNotFoundException(name);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -146,15 +168,20 @@ public class PermissiveClassLoader extends ClassLoader{
 	 * if possible
 	 */
 	public Class loadNullClass(Class clazz) {
+		Class c;
 		if(hiddenClasses.containsKey(clazz.getCanonicalName())){//cannot modify the original bytecode
 			if(Modifier.isFinal(clazz.getModifiers())){
 				return null;
 			}else{
-				return loadExistingNullClass(clazz.getCanonicalName());
+				c = loadExistingNullClass(clazz.getCanonicalName());
 			}
 		}else{
-			return loadModifiedClass(clazz.getCanonicalName(),clazz.isInterface());
+			c = createNullGhostClass(clazz.getCanonicalName(),clazz.isInterface());
 		}
+		if (!c.getName().endsWith("Nullified")) {
+			throw new RuntimeException("postcondition violated");
+		}
+		return c;
 	}
 
 	/**
@@ -187,8 +214,12 @@ public class PermissiveClassLoader extends ClassLoader{
 	 * by modifying the original class
 	 * @param b 
 	 */
-	private Class loadModifiedClass(String name, boolean b) {
-		System.err.println(name);		
+	private Class createNullGhostClass(String name, boolean b) {
+		System.err.println("created null ghost class for "+name);
+		if (name.endsWith("Nullified")) {
+			throw new IllegalArgumentException("can not create a ghost of a ghost");
+		}
+
 		String newName = name+"Nullified";
 		if(classes.containsKey(newName)){
 			return classes.get(newName);

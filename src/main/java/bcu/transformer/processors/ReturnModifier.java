@@ -63,7 +63,7 @@ public class ReturnModifier extends AbstractProcessor<CtReturn>{
 			}
 
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			location.setValue(""+StringEscapeUtils.escapeJava(sign+ " "+Helpers.nicePositionString(element.getPosition()))+"");
 			location.setType(getFactory().Type().createReference(String.class));
 				
 			CtTypeReference tmpref = getFactory().Core().clone(element.getParent(CtMethod.class).getType());

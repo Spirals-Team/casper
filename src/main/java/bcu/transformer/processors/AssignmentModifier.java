@@ -40,6 +40,9 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 		}
 		i++;
 		String sign="???";
+		try {
+			sign = element.getAssigned().toString();
+		} catch (Exception ignore) {}
 		try{
 			NameResolver.getName(element.getAssigned());
 		}catch(NullPointerException npe){
@@ -67,7 +70,7 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 			}
 			
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+			location.setValue(""+StringEscapeUtils.escapeJava(sign+ " "+Helpers.nicePositionString(element.getPosition()))+"");
 			location.setType(getFactory().Type().createReference(String.class));
 			
 			//remove generic

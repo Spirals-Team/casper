@@ -1,5 +1,6 @@
 package bcornu.nullmode;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +22,24 @@ public class NullInstanceManager {
 	private static List<Class> notGhostable = new ArrayList<>();
 	
 	public static Object getNullInstance(Class clazz){
-//		if(clazz.getCanonicalName().contains("SubHyperplane")){
-//			System.out.println("here");
-//		}
+		
+		//  unfortunately Array is deeply final :-(		
+		if (clazz.isArray()) return null;
+		
 		i++;
 		try{
 			if(notGhostable.contains(clazz)){
 				return null;
 			}
-			Class correspondingNullClass = getClassLoader().loadNullClass(clazz);
+
+			Class correspondingNullClass;
+			ClassLoader cl = clazz.getClassLoader();
+			if (cl instanceof PermissiveClassLoader) {
+				correspondingNullClass = ((PermissiveClassLoader)cl).loadNullClass(clazz);
+			} else {
+				correspondingNullClass = clazz.getClassLoader().loadClass(clazz.getName()+"Nullified");
+			}
+			
 			if(correspondingNullClass==null){
 				System.err.println(clazz.getCanonicalName()+" cannot be nullInstanciated");
 				notGhostable.add(clazz);
@@ -79,9 +89,9 @@ public class NullInstanceManager {
 			
 		}catch(Throwable t){
 //			System.err.println("class :"+clazz.getCanonicalName());
-//			t.printStackTrace();
+			t.printStackTrace();
 			notGhostable.add(clazz);
-			return null;
+			throw new RuntimeException(t);
 		}
 	}
 	
@@ -89,9 +99,4 @@ public class NullInstanceManager {
 		return ""+i;
 	}
 
-	private static PermissiveClassLoader getClassLoader() {
-		if(pClassLoader==null)
-			pClassLoader = (PermissiveClassLoader) ClassLoader.getSystemClassLoader();
-		return pClassLoader;
-	}
 }

@@ -180,7 +180,7 @@ public class NullClassCreator extends ClassVisitor implements Opcodes{
     	FieldVisitor fv;
     	MethodVisitor mv;
     	
-    	fv = cv.visitField(ACC_PRIVATE, "DNPE_data", "Lbcornu/nullmode/DebugInfo;", null, null);
+    	fv = cv.visitField(ACC_PUBLIC, "DNPE_data", "Lbcornu/nullmode/DebugInfo;", null, null);
     	fv.visitEnd();
     	
     	mv = cv.visitMethod(ACC_PUBLIC, "addData", "(Ljava/lang/String;)V", null, null);

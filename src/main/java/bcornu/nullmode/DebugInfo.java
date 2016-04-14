@@ -1,14 +1,13 @@
 package bcornu.nullmode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DebugInfo {
 	
-	private String initLocation;
-	private String excLocation;
 	private StackTraceElement[] creationTrace;
-	private List<String> events = new ArrayList<>();
+	public List<String> events = new ArrayList<>();
 	private List<StackTraceElement[]> stacks = new ArrayList<>();
 	
 	
@@ -71,6 +70,10 @@ public class DebugInfo {
 		return stacks.get(i);
 	}
 	
+	@Override
+	public String toString() {
+		return events.toString();
+	}
 	
 	
 	

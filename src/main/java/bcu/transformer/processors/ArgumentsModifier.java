@@ -42,7 +42,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 			List<CtParameterImpl> args = element.getParameters();
 			for (CtParameterImpl current : args) {
 				
-				String sign = element.getSimpleName()+" / "+current.getSimpleName();
+				String sign = "parameter "+current.getSimpleName() + " is null in "+element.getSimpleName()+ " at "+Helpers.nicePositionString(element.getPosition());
 				
 				if(current.hasModifier(ModifierKind.FINAL)){
 					
@@ -79,7 +79,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					}
 					
 					CtLiteral location = getFactory().Core().createLiteral();
-					location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+					location.setValue(StringEscapeUtils.escapeJava(sign));
 					location.setType(getFactory().Type().createReference(String.class));
 					
 					CtInvocation invoc = getFactory().Core().createInvocation();
@@ -127,7 +127,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					}
 					
 					CtLiteral location = getFactory().Core().createLiteral();
-					location.setValue("\""+StringEscapeUtils.escapeJava(sign)+"\"");
+					location.setValue(StringEscapeUtils.escapeJava(sign));
 					location.setType(getFactory().Type().createReference(String.class));
 					
 					CtInvocation invoc = getFactory().Core().createInvocation();
