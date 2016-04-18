@@ -5,11 +5,11 @@ A tool for finding the root cause of null pointer exceptions through causality t
 
 [![Build Status](https://travis-ci.org/Spirals-Team/casper.svg?branch=master)](https://travis-ci.org/Spirals-Team/casper)
 
-Casper: Debugging Null Dereferences with Ghosts and Causality Traces (Benoit Cornu, Earl T. Barr, Lionel Seinturier, Martin Monperrus), Technical report hal-01113988, Inria Lille, 2015.
+Casper: Debugging Null Dereferences with Dynamic Causality Traces (Benoit Cornu, Earl T. Barr, Lionel Seinturier, Martin Monperrus), Technical report hal-01113988, Inria Lille, 2015.
 
 ```
 @techreport{cornu:hal-01113988,
- title = {Casper: Debugging Null Dereferences with Ghosts and Causality Traces},
+ title = {Casper: Debugging Null Dereferences with Dynamic Causality Traces},
  author = {Cornu, Benoit and Barr, Earl T. and Seinturier, Lionel and Monperrus, Martin},
  number = {hal-01113988},
  institution = {Inria Lille},
