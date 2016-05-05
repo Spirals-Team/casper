@@ -20,6 +20,12 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 
 	public static final String FIELD_NAME = "DNPE_data";
 
+	
+	@Override
+	public boolean isToBeProcessed(CtClass candidate) {
+		return candidate.isTopLevel();
+	}
+	
 	@Override
 	public void process(CtClass arg0) {
 		System.out.println(arg0.getSimpleName());
@@ -41,6 +47,10 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			CtMethod meth = (CtMethod)m; 
 			// we don't override static methods
 			if (meth.getModifiers().contains(ModifierKind.STATIC)) continue;
+			if (meth.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
+			// no interface method
+			if (meth.getBody()==null) continue;
+
 			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
 			stmt.setValue("throw new bcornu.nullmode.DeluxeNPE("+FIELD_NAME+")");
 			List<CtStatement> l = new ArrayList<>();
@@ -52,7 +62,8 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 		addDebugInfoField(ghostClass);
 		
 		ghostClass.setParent(arg0.getPackage());
-		CtPackage p = getFactory().Package().getOrCreate(ghostClass.getPackage().getQualifiedName());
+		String qualifiedName = ghostClass.getPackage().getQualifiedName();
+		CtPackage p = getFactory().Package().getOrCreate(qualifiedName);
 		p.addType(ghostClass);
 
 	}
