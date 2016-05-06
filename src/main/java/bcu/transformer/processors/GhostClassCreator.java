@@ -8,6 +8,7 @@ import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -37,14 +38,57 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 		}
 		
 		// cloning
-		CtClass ghostClass = getFactory().Core().clone(arg0);
+		CtClass ghostClass = getFactory().Core().createClass();
 
 		ghostClass.setSimpleName(arg0.getSimpleName()+"Nullified");
 		ghostClass.setSuperclass(arg0.getReference());
+		
+		if (arg0.getConstructors().size()>0) {
+			// handling Constructor
+			CtConstructor constructor = getFactory().Core().createConstructor();
+			constructor.addModifier(ModifierKind.PUBLIC);
+			ghostClass.addConstructor(constructor);
+			class SmallConstructorFound extends RuntimeException{};
+			CtConstructor parent = null; 
+			try {
+			for (int i=0;i<10;i++) {
+				for (Object o:arg0.getConstructors()) {
+					CtConstructor x = (CtConstructor)o;
+					if (x.getParameters().size()==i) {
+						parent = x;
+						throw new SmallConstructorFound();
+					}
+			}}
+			}
+			catch (SmallConstructorFound ignore) {}	
+			parent.getModifiers().remove(ModifierKind.PRIVATE);
+			parent.getModifiers().remove(ModifierKind.PROTECTED);
+			parent.addModifier(ModifierKind.PUBLIC);
+			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
+			String params = "";
+			for (int j=0;j< parent.getParameters().size();j++) {
+				String typeRef = ((CtParameter)parent.getParameters().get(j)).getType().getQualifiedName();
+				if ("int".equals(typeRef)) {
+					params+="0";
+				} else	if ("boolean".equals(typeRef)) {
+					params+="true";
+				} else {
+					params+="null";					
+				}
+				if (j<parent.getParameters().size()-1) {
+					params+=", ";
+				}				
+			}
+			stmt.setValue("super("+params+")");
+			List<CtStatement> l = new ArrayList<>();
+			l.add(stmt);
+			constructor.setBody(getFactory().Core().createBlock());
+			constructor.getBody().setStatements(l);
+		}
 		// add marker interface
 		ghostClass.addSuperInterface(getFactory().Type().createReference(NullGhost.class));		
-		for (Object m : ghostClass.getAllMethods()) {
-			CtMethod meth = (CtMethod)m; 
+		for (Object m : arg0.getAllMethods()) {
+			CtMethod meth = (CtMethod)getFactory().Core().clone(m); 
 			// we don't override static methods
 			if (meth.getModifiers().contains(ModifierKind.STATIC)) continue;
 			if (meth.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
@@ -56,6 +100,7 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			List<CtStatement> l = new ArrayList<>();
 			l.add(stmt);
 			meth.getBody().setStatements(l);
+			ghostClass.addMethod(meth);
 		}
 		addAddDataMethod(ghostClass);
 		

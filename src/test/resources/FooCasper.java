@@ -6,12 +6,12 @@ public class FooCasper {
 ////		new FooCasper().selfTest();
 //	}
 	FooCasper f;
-	
-	public FooCasper bug1() {
-		if (new FooCasper().foo() != null) {
+		
+ 	public FooCasper bug1() {
+		if (new FooCasper(1).foo() != null) {
 			throw new Error();
 		}
-		FooCasper g = new FooCasper().foo();
+		FooCasper g = new FooCasper(1).foo();
 		f=g;
 		System.out.println(f);
 		// the NPE
@@ -55,4 +55,11 @@ public class FooCasper {
 		if (0==1) {tab = new Object();}
 		tab.toString();
 	}
+	
+	public FooCasper(int i) {
+	}
+
+	public FooCasper() {
+	}
+
 }
