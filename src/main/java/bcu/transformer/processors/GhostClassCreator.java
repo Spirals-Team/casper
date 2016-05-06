@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import bcornu.nullmode.DebugInfo;
 import bcornu.nullmode.NullGhost;
@@ -24,7 +25,7 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 	
 	@Override
 	public boolean isToBeProcessed(CtClass candidate) {
-		return candidate.isTopLevel();
+		return candidate.isTopLevel() && !candidate.getModifiers().contains(ModifierKind.ABSTRACT);
 	}
 	
 	@Override
@@ -36,6 +37,15 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			CtMethod meth = (CtMethod)m; 
 			meth.getModifiers().remove(ModifierKind.FINAL);
 		}
+		
+		// public netsetdtypes
+		for (Object m : arg0.getNestedTypes()) {
+			CtType nested = (CtType)m; 
+			nested.getModifiers().remove(ModifierKind.PRIVATE);
+			nested.getModifiers().remove(ModifierKind.PROTECTED);
+			nested.addModifier(ModifierKind.PUBLIC);
+		}
+		
 		
 		// cloning
 		CtClass ghostClass = getFactory().Core().createClass();
@@ -72,8 +82,14 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 					params+="0";
 				} else	if ("boolean".equals(typeRef)) {
 					params+="true";
+				} else	if ("char".equals(typeRef)) {
+					params+="(char)0";
+				} else	if ("double".equals(typeRef)) {
+					params+="0f";
+				} else	if ("float".equals(typeRef)) {
+					params+="0f";
 				} else {
-					params+="null";					
+					params+="("+typeRef+")null";					
 				}
 				if (j<parent.getParameters().size()-1) {
 					params+=", ";
@@ -92,6 +108,7 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			// we don't override static methods
 			if (meth.getModifiers().contains(ModifierKind.STATIC)) continue;
 			if (meth.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
+			if (meth.getModifiers().contains(ModifierKind.FINAL)) continue;
 			// no interface method
 			if (meth.getBody()==null) continue;
 
