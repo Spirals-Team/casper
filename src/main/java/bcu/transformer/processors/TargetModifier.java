@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -39,7 +40,7 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 				|| element instanceof CtInvocation // those are handled by the GhostClass
 				)
 			return;
-		String sign=NameResolver.getName(element.getTarget());
+		String targetStringRepresentation=NameResolver.getName(element.getTarget());
 		try{
 			System.out.println(element);
 
@@ -50,7 +51,16 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			execref.setStatic(true);
 			
 			CtTypeReference tmp = element.getTarget().getType();
-			if(sign.equals("class")){
+			
+			// special case of arrays
+			if (tmp.getQualifiedName().equals("java.lang.reflect.Array")
+					&& element.getParent() instanceof CtAssignment && element.getParent(CtAssignment.class).getAssigned() == element
+					) {
+				System.out.println(tmp.getQualifiedName());
+				return;
+			}
+
+			if(targetStringRepresentation.equals("class")){
 				tmp = getFactory().Type().createReference(Class.class);
 			}
 			if(element.getTarget().getTypeCasts()!=null && element.getTarget().getTypeCasts().size()>0){

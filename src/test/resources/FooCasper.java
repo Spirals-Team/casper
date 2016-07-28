@@ -13,7 +13,7 @@ public class FooCasper {
 		}
 		FooCasper g = new FooCasper(1).foo();
 		f=g;
-		System.out.println(f);
+		System.out.println("ss");
 		// the NPE
 		f.bar();
 		return null;
@@ -62,4 +62,18 @@ public class FooCasper {
 	public FooCasper() {
 	}
 
+	// toString support
+	public void toString_support() {
+		FooCasper o = null;
+		o.toString();
+	}
+
+	// testing arrays
+	public void array_support() {
+		FooCasper o = null;
+		FooCasper[] array = new FooCasper[10];
+		array[1] = o;
+		array[2] = array[1];
+		array[2].bar();
+	}
 }

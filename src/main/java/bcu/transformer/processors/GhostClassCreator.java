@@ -119,6 +119,9 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			meth.getBody().setStatements(l);
 			ghostClass.addMethod(meth);
 		}
+		
+		addAddToStringMethod(ghostClass);
+		
 		addAddDataMethod(ghostClass);
 		
 		addDebugInfoField(ghostClass);
@@ -130,6 +133,29 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 
 	}
 
+
+	private void addAddToStringMethod(CtClass ghostClass) {
+		CtMethod m = getFactory().Core().createMethod();
+		m.setSimpleName("toString");
+		m.setType(getFactory().Type().STRING);
+		m.addModifier(ModifierKind.PUBLIC);
+		m.setBody(getFactory().Core().createBlock());
+		CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
+		
+		System.out.println(Thread.currentThread().getStackTrace()[0]);
+		
+		
+		//stmt.setValue("System.out.println(\"++\"+Thread.currentThread().getStackTrace()[4]);return null");
+		
+		stmt.setValue("throw new bcornu.nullmode.DeluxeNPE("+FIELD_NAME+")");
+
+		List<CtStatement> l = new ArrayList<>();
+		l.add(stmt);
+		m.getBody().setStatements(l);
+		ghostClass.addMethod(m);
+	}
+
+	
 	private void addAddDataMethod(CtClass ghostClass) {
 		CtMethod m = getFactory().Core().createMethod();
 		m.setSimpleName("addData");

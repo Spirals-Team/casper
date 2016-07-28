@@ -199,6 +199,33 @@ public class CasperTest {
 			assertTrue(npe instanceof NullPointerException);
 			assertTrue(npe instanceof LocatedNPE);
 		}
+		
+		if (type == GhostClassType.SOURCE_GHOST) {
+			// TODO implement for binary instrumentation also
+			// toSring
+			try {
+				MethodUtils.invokeExactMethod(o, "toString_support");
+				fail("no npe thrown"); 
+			} catch (InvocationTargetException e) {				
+				Throwable npe = e.getCause();
+				assertTrue(npe instanceof NullPointerException);
+				assertTrue(npe instanceof DeluxeNPE);
+				System.out.println(npe);
+				assertEquals(1, ((DebugInfo)FieldUtils.readField(npe, "data")).events.size());
+			}
+		}
+
+		// arrays
+		try {
+			MethodUtils.invokeExactMethod(o, "array_support");
+			fail("no npe thrown"); // no npe
+		} catch (InvocationTargetException e) {				
+			Throwable npe = e.getCause();
+			assertTrue(npe instanceof NullPointerException);
+			assertTrue(npe instanceof DeluxeNPE);
+			System.out.println(npe);
+			assertEquals(3, ((DebugInfo)FieldUtils.readField(npe, "data")).events.size());
+		}
 
 	}
 }
