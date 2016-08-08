@@ -13,7 +13,7 @@ public class FooCasper {
 		}
 		FooCasper g = new FooCasper(1).foo();
 		f=g;
-		System.out.println("ss");
+		System.out.println(f);
 		// the NPE
 		f.bar();
 		return null;
@@ -44,14 +44,14 @@ public class FooCasper {
 	}
 	
 	public void bug3() {
-		FooCasper[] tab =null;
+		FooCasper[] tab = null;
 		if (0==1) {tab = new FooCasper[0];}
 		tab[0].bar();
 	}
 
 	// testing the given ObjectNullified
 	public void bug4() {
-		Object tab =null;
+		Object tab  =null;
 		if (0==1) {tab = new Object();}
 		tab.toString();
 	}
@@ -75,5 +75,16 @@ public class FooCasper {
 		array[1] = o;
 		array[2] = array[1];
 		array[2].bar();
+	}
+
+	public void literal() {
+		FooCasper tab = null;
+		tab.literal();
+	}
+
+	public void literal2() {
+		FooCasper tab = new FooCasper();
+		tab = null;
+		tab.literal();
 	}
 }

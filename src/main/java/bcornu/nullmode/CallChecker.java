@@ -3,8 +3,8 @@ package bcornu.nullmode;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 public class CallChecker {
-	
-	public static <T> T isCalled(Object initialValue, Class clazz, String location) {
+
+	public static <T> T isCalled(T initialValue, Class clazz, String location) {
 		// case 1
 		if(initialValue instanceof NullGhost){
 			((NullGhost)initialValue).addData("field access on null at "+location);

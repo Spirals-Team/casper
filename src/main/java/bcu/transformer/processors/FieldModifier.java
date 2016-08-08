@@ -9,7 +9,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtField;
@@ -40,7 +39,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 		i++;
 		String sign="???";
 		try{
-			sign = element.getSimpleName()+ " "+ Helpers.nicePositionString(element.getPosition());
+			sign = "field "+element.getSimpleName()+ " "+ Helpers.nicePositionString(element.getPosition());
 		}catch(Throwable npe){
 			System.err.println("cannot get signature");
 		}
@@ -70,11 +69,16 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 			CtExecutableReference execref = getFactory().Core().createExecutableReference();
 			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.AssignResolver"));
 			execref.setSimpleName("setAssigned");
+			if((((CtLiteral)element.getDefaultExpression()).getValue()==null)) {
+				execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.NullLiteralResolver"));
+				execref.setSimpleName("createNullGhost");
+			}
+
 			execref.setStatic(true);
-			
+
 			System.out.println(execref);
 			CtTypeReference tmp = element.getType();
-			
+
 			CtExpression arg = null;
 			if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
 				arg = getFactory().Core().createLiteral();
@@ -83,7 +87,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 				CtFieldReference ctfe = new CtFieldReferenceImpl();
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getType().box());
-				
+
 				arg = new CtFieldAccessImpl();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
@@ -91,13 +95,13 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 			CtLiteral location = getFactory().Core().createLiteral();
 			location.setValue(""+StringEscapeUtils.escapeJava(sign)+"");
 			location.setType(getFactory().Type().createReference(String.class));
-			
+
 			CtExpression assignment = element.getDefaultExpression();
-			
+
 			CtInvocation invoc = getFactory().Core().createInvocation();
 			invoc.setExecutable(execref);
 			invoc.setArguments(Arrays.asList(new CtExpression[]{assignment,arg,location}));
-			
+
 			CtTypeReference tmpref = getFactory().Core().clone(element.getType());
 			if(!(tmpref instanceof CtArrayTypeReference)){
 				tmpref = tmpref.box();
@@ -105,7 +109,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			}
 			tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
-			
+
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 			element.setDefaultExpression(invoc);
 		}catch(Throwable t){
