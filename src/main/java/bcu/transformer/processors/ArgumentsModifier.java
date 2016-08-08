@@ -27,12 +27,12 @@ import spoon.support.reflect.reference.CtFieldReferenceImpl;
 public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 
 	static int i=0;
-	
+
 //	private void test() {
 		// TODO Auto-generated method stub
 //		getFactory().Type().createReference("").getDeclaration().getNestedType(name);
 //	}
-		
+
 	@Override
 	public void process(CtMethod element) {
 		if(element.getParameters() == null || element.getParameters().size()==0 || element.getBody()==null){
@@ -41,11 +41,11 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 			i++;
 			List<CtParameterImpl> args = element.getParameters();
 			for (CtParameterImpl current : args) {
-				
-				String sign = "parameter "+current.getSimpleName() + " is null in "+element.getSimpleName()+ " at "+Helpers.nicePositionString(element.getPosition());
-				
+
+				String sign = ""+current.getSimpleName() + " is null in "+element.getSimpleName()+ " at "+Helpers.nicePositionString(element.getPosition());
+
 				if(current.hasModifier(ModifierKind.FINAL)){
-					
+
 					CtLocalVariable var = getFactory().Core().createLocalVariable();
 					var.setSimpleName(current.getSimpleName());
 					var.setType(current.getType());
@@ -53,18 +53,18 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 
 					current.removeModifier(ModifierKind.FINAL);
 					current.setSimpleName(current.getSimpleName()+"_s");
-					
+
 					CtVariableAccess variable = getFactory().Core().createVariableAccess();
 					variable.setVariable(current.getReference());
 					variable.setType(current.getReference().getType());
-					
+
 					CtExecutableReference execref = getFactory().Core().createExecutableReference();
 					execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.ArgumentResolver"));
 					execref.setSimpleName("setPassedArg");
 					execref.setStatic(true);
-					
+
 					CtTypeReference tmp = variable.getType();
-					
+
 					CtExpression arg = null;
 					if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
 						arg = getFactory().Core().createLiteral();
@@ -73,19 +73,19 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						CtFieldReference ctfe = new CtFieldReferenceImpl();
 						ctfe.setSimpleName("class");
 						ctfe.setDeclaringType(tmp.box());
-						
+
 						arg = new CtFieldAccessImpl();
 						((CtFieldAccessImpl) arg).setVariable(ctfe);
 					}
-					
+
 					CtLiteral location = getFactory().Core().createLiteral();
 					location.setValue(StringEscapeUtils.escapeJava(sign));
 					location.setType(getFactory().Type().createReference(String.class));
-					
+
 					CtInvocation invoc = getFactory().Core().createInvocation();
 					invoc.setExecutable(execref);
 					invoc.setArguments(Arrays.asList(new CtExpression[]{variable,arg,location}));
-					
+
 					CtTypeReference tmpref = getFactory().Core().clone(tmp);
 					if(!(tmpref instanceof CtArrayTypeReference)){
 						tmpref = tmpref.box();
@@ -93,26 +93,26 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					}
 					tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
-					
+
 					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
-					
+
 					var.setDefaultExpression(invoc);
-					
+
 					element.getBody().insertBegin(var);
-					
-					
+
+
 				}else{
 					CtVariableAccess variable = getFactory().Core().createVariableAccess();
 					variable.setVariable(current.getReference());
 					variable.setType(current.getReference().getType());
-					
+
 					CtExecutableReference execref = getFactory().Core().createExecutableReference();
 					execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.ArgumentResolver"));
 					execref.setSimpleName("setPassedArg");
 					execref.setStatic(true);
-					
+
 					CtTypeReference tmp = variable.getType();
-					
+
 					CtExpression arg = null;
 					if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
 						arg = getFactory().Core().createLiteral();
@@ -121,19 +121,19 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						CtFieldReference ctfe = new CtFieldReferenceImpl();
 						ctfe.setSimpleName("class");
 						ctfe.setDeclaringType(tmp.box());
-						
+
 						arg = new CtFieldAccessImpl();
 						((CtFieldAccessImpl) arg).setVariable(ctfe);
 					}
-					
+
 					CtLiteral location = getFactory().Core().createLiteral();
 					location.setValue(StringEscapeUtils.escapeJava(sign));
 					location.setType(getFactory().Type().createReference(String.class));
-					
+
 					CtInvocation invoc = getFactory().Core().createInvocation();
 					invoc.setExecutable(execref);
 					invoc.setArguments(Arrays.asList(new CtExpression[]{variable,arg,location}));
-					
+
 					CtTypeReference tmpref = getFactory().Core().clone(tmp);
 					if(!(tmpref instanceof CtArrayTypeReference)){
 						tmpref = tmpref.box();
@@ -141,19 +141,19 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 					}
 					tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
-					
+
 					execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
-					
+
 					CtAssignment assignment = getFactory().Core().createAssignment();
 					assignment.setAssigned(variable);
 					assignment.setAssignment(invoc);
-					
+
 					element.getBody().insertBegin(assignment);
 				}
 			}
 		}
 	}
-	
+
 	@Override
 		public void processingDone() {
 			System.out.println("3-->"+i);

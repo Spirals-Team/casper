@@ -34,6 +34,10 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 		if(element.getAssignment() instanceof CtLiteral)
 			if(!(((CtLiteral)element.getAssignment()).getValue() == null))
 				return;
+
+		// already processed for null literal
+		if (element.getAssignment().toString().startsWith("bcornu")) return;
+
 		}catch(NullPointerException npe){
 //			System.out.println("cannot get element type?");
 			return;
@@ -53,9 +57,9 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.AssignResolver"));
 			execref.setSimpleName("setAssigned");
 			execref.setStatic(true);
-			
+
 			CtTypeReference tmp = element.getAssigned().getType();
-			
+
 			CtExpression arg = null;
 			if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
 				arg = getFactory().Core().createLiteral();
@@ -64,15 +68,15 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 				CtFieldReference ctfe = new CtFieldReferenceImpl();
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getAssigned().getType().box());
-				
+
 				arg = new CtFieldAccessImpl();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
-			
+
 			CtLiteral location = getFactory().Core().createLiteral();
 			location.setValue(""+StringEscapeUtils.escapeJava(sign+ " "+Helpers.nicePositionString(element.getPosition()))+"");
 			location.setType(getFactory().Type().createReference(String.class));
-			
+
 			//remove generic
 			CtTypeReference tmpref = getFactory().Core().clone(element.getAssigned().getType());
 			if(!(tmpref instanceof CtArrayTypeReference)){
@@ -81,12 +85,12 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			}
 			tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
-			
+
 			CtInvocation invoc = getFactory().Core().createInvocation();
 			invoc.setExecutable(execref);
 			invoc.setArguments(Arrays.asList(new CtExpression[]{element.getAssignment(), arg, location}));
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
-			
+
 			element.setAssignment(invoc);
 		}catch(Throwable t){
 			System.err.println("cannot resolve an assign");

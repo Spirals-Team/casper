@@ -1,9 +1,6 @@
 package bcornu.nullmode;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
-
-import initialization.on.Null;
 
 
 @SuppressWarnings("serial")
@@ -11,7 +8,7 @@ public class DeluxeNPE extends NullPointerException {
 
 	public DebugInfo data;
 
-	private StackTraceElement lastStackTraceElement;
+	final private StackTraceElement lastStackTraceElement;
 
 	public DeluxeNPE(DebugInfo data) {
 		this.data = data;
@@ -23,8 +20,10 @@ public class DeluxeNPE extends NullPointerException {
 			res[i-1]=old[i];
 		}
 		setStackTrace(res);
+
+		this.data.used(lastEvent());
 	}
-	
+
 	@Override
 	public void printStackTrace(PrintWriter s) {
 		super.printStackTrace(s);
@@ -39,10 +38,7 @@ public class DeluxeNPE extends NullPointerException {
 		for (int i = 0;i<data.nbSteps();i++) {
 			s+=""+data.get(i)+"\n";
 		}
-		
-		// the line number of this one is the one of the transformed file
-		s+="throws NPE "+"at "+lastStackTraceElement.toString();
-		
+
 		return s;
 		//		try{
 		//return super.toString()+" from "+ data.getFirst()+"\n"+NullInstanceManager.printNb();
@@ -51,7 +47,15 @@ public class DeluxeNPE extends NullPointerException {
 //			return "cannot provide data";
 //		}
 	}
-	
+
+	private String lastEvent() {
+		return "throws NPE "+"at "+lastStackTraceElement.toString();
+	}
+
+	public static <T> T setPassedArg(Object initialValue, Class clazz, String location) {
+		return InceptionManager.createGhost(initialValue, clazz, location, "parameter ");
+	}
+
 //	@Override
 //	public synchronized Throwable getCause() {
 //		Null e = null;
@@ -65,6 +69,6 @@ public class DeluxeNPE extends NullPointerException {
 //		}
 //		return e;
 //	}
-	
-	
+
+
 }

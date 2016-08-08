@@ -13,7 +13,6 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -30,11 +29,17 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 	public void processingDone() {
 		System.out.println("2b-->"+i);
 	}
+
+	@Override
+	public boolean isToBeProcessed(CtLocalVariable candidate) {
+		return candidate.getDefaultExpression()!=null && !candidate.getDefaultExpression().toString().startsWith("bcornu");
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void process(CtLocalVariable element) {
-		if(element.getParent() instanceof CtCatch 
-				|| element.getParent() instanceof CtFor 
+		if(element.getParent() instanceof CtCatch
+				|| element.getParent() instanceof CtFor
 				|| element.getParent() instanceof CtForEach)
 			return;
 		if(element.getType().isPrimitive() && element.getDefaultExpression()==null)
@@ -63,9 +68,9 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 			execref.setDeclaringType(getFactory().Type().createReference("bcornu.nullmode.AssignResolver"));
 			execref.setSimpleName("setAssigned");
 			execref.setStatic(true);
-			
+
 			CtTypeReference tmp = element.getType();
-			
+
 			CtExpression arg = null;
 			if(tmp.isAnonymous() || (tmp.getPackage()==null && tmp.getSimpleName().length()==1)){
 				arg = getFactory().Core().createLiteral();
@@ -74,7 +79,7 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 				CtFieldReference ctfe = new CtFieldReferenceImpl();
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getType().box());
-				
+
 				arg = new CtFieldAccessImpl();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
@@ -97,7 +102,7 @@ public class VariableModifier extends AbstractProcessor<CtLocalVariable>{
 				((CtArrayTypeReference)tmpref).getComponentType().setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
 			}
 			tmpref.setActualTypeArguments(new ArrayList<CtTypeReference<?>>());
-			
+
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 			element.setDefaultExpression(invoc);
 		}catch(Throwable t){
