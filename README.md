@@ -5,18 +5,21 @@ A tool for finding the root cause of null pointer exceptions through causality t
 
 [![Build Status](https://travis-ci.org/Spirals-Team/casper.svg?branch=master)](https://travis-ci.org/Spirals-Team/casper)
 
-Casper: Debugging Null Dereferences with Dynamic Causality Traces (Benoit Cornu, Earl T. Barr, Lionel Seinturier, Martin Monperrus), Technical report hal-01113988, Inria Lille, 2015.
+Casper: Automatic Tracking of Null Dereferences to Inception with Causality Traces (Benoit Cornu, Earl T. Barr, Martin Monperrus and Lionel Seinturier), In Journal of Systems and Software, Elsevier, 2016.
 
 ```
-@techreport{cornu:hal-01113988,
- title = {Casper: Debugging Null Dereferences with Dynamic Causality Traces},
- author = {Cornu, Benoit and Barr, Earl T. and Seinturier, Lionel and Monperrus, Martin},
- number = {hal-01113988},
- institution = {Inria Lille},
- year = {2015},
- url = {https://hal.archives-ouvertes.fr/hal-01113988/file/main.pdf},
+@article{cornu:hal-01354090,
+ title = {{Casper: Automatic Tracking of Null Dereferences to Inception with Causality Traces}},
+ author = {Cornu, Benoit and Barr, Earl T. and Monperrus, Martin and Seinturier, Lionel},
+ url = {https://hal.archives-ouvertes.fr/hal-01354090/document},
+ doi = {10.1016/j.jss.2016.08.062},
+ journal = {{Journal of Systems and Software}},
+ publisher = {{Elsevier}},
+ year = {2016},
 }
 ```
+
+Casper: Debugging Null Dereferences with Dynamic Causality Traces (Benoit Cornu, Earl T. Barr, Lionel Seinturier, Martin Monperrus), Technical report hal-01113988, Inria Lille, 2015.
 
 The evaluation dataset is at <https://github.com/Spirals-Team/npe-dataset/>
 
