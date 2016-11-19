@@ -3,7 +3,6 @@ package bcu.transformer.processors;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import bcornu.nullmode.AssignResolver;
 import bcornu.nullmode.CallChecker;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtArrayAccess;

@@ -184,7 +184,6 @@ public class CasperTest {
 			assertTrue(events.contains("assigned null to g (FooCasper.java:14)"));
 			assertTrue(events.contains("assigned null to f (FooCasper.java:15)"));
 			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:19)"));
-
 		}
 
 

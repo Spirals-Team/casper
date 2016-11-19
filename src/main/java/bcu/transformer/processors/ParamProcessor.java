@@ -9,12 +9,11 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtFieldAccessImpl;
-import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
 
 import java.util.Arrays;
 
-public class ParamProcessor extends AbstractProcessor<CtInvocation<?>>{
+public class ParamProcessor extends AbstractProcessor<CtInvocation<?>> {
 
 	@Override
 	public void process(CtInvocation<?> arg0) {
@@ -36,12 +35,12 @@ public class ParamProcessor extends AbstractProcessor<CtInvocation<?>>{
 			CtFieldReference ctfe = new CtFieldReferenceImpl();
 			ctfe.setSimpleName("class");
 			ctfe.setDeclaringType(tmp.box());
-			arg = new CtFieldReadImpl();
+			arg = getFactory().Core().createFieldRead();
 			((CtFieldAccessImpl) arg).setVariable(ctfe);
 
 
 			CtLiteral location = getFactory().Core().createLiteral();
-			location.setValue(""+StringEscapeUtils.escapeJava(param.toString()+ " "+Helpers.nicePositionString(param.getPosition()))+"");
+			location.setValue(""+ StringEscapeUtils.escapeJava(param.toString()+ " "+Helpers.nicePositionString(param.getPosition()))+"");
 			location.setType(getFactory().Type().createReference(String.class));
 
 			CtTypeReference tmpref = getFactory().Core().clone(tmp);

@@ -18,7 +18,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtFieldAccessImpl;
-import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
 
 public class NullLiteralProcessor extends AbstractProcessor<CtLiteral<?>>{
@@ -50,7 +49,7 @@ public class NullLiteralProcessor extends AbstractProcessor<CtLiteral<?>>{
 		CtFieldReference ctfe = new CtFieldReferenceImpl();
 		ctfe.setSimpleName("class");
 		ctfe.setDeclaringType(tmp.box());
-		arg = new CtFieldReadImpl();
+		arg = getFactory().Core().createFieldRead();
 		((CtFieldAccessImpl) arg).setVariable(ctfe);
 
 
