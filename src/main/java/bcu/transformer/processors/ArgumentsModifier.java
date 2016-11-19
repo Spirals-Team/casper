@@ -54,7 +54,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 					current.removeModifier(ModifierKind.FINAL);
 					current.setSimpleName(current.getSimpleName()+"_s");
 
-					CtVariableAccess variable = getFactory().Core().createVariableAccess();
+					CtVariableAccess variable = getFactory().Core().createFieldRead();
 					variable.setVariable(current.getReference());
 					variable.setType(current.getReference().getType());
 
@@ -74,7 +74,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						ctfe.setSimpleName("class");
 						ctfe.setDeclaringType(tmp.box());
 
-						arg = new CtFieldAccessImpl();
+						arg = getFactory().Core().createFieldRead();
 						((CtFieldAccessImpl) arg).setVariable(ctfe);
 					}
 
@@ -102,7 +102,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 
 
 				}else{
-					CtVariableAccess variable = getFactory().Core().createVariableAccess();
+					CtVariableAccess variable = getFactory().Core().createVariableRead();
 					variable.setVariable(current.getReference());
 					variable.setType(current.getReference().getType());
 
@@ -122,7 +122,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						ctfe.setSimpleName("class");
 						ctfe.setDeclaringType(tmp.box());
 
-						arg = new CtFieldAccessImpl();
+						arg = getFactory().Core().createFieldRead();
 						((CtFieldAccessImpl) arg).setVariable(ctfe);
 					}
 

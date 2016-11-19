@@ -58,7 +58,7 @@ public class ReturnModifier extends AbstractProcessor<CtReturn>{
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getParent(CtMethod.class).getType().box());
 				
-				arg = new CtFieldAccessImpl();
+				arg = getFactory().Core().createFieldRead();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
 

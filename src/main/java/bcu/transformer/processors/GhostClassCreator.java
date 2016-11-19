@@ -9,6 +9,7 @@ import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -54,7 +55,7 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 		ghostClass.setSuperclass(arg0.getReference());
 		
 		if (arg0.getConstructors().size()>0) {
-			// handling Constructor
+					// handling Constructor
 			CtConstructor constructor = getFactory().Core().createConstructor();
 			constructor.addModifier(ModifierKind.PUBLIC);
 			ghostClass.addConstructor(constructor);
@@ -104,13 +105,14 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 		// add marker interface
 		ghostClass.addSuperInterface(getFactory().Type().createReference(NullGhost.class));		
 		for (Object m : arg0.getAllMethods()) {
-			CtMethod meth = (CtMethod)getFactory().Core().clone(m); 
+			CtMethod meth = (CtMethod)getFactory().Core().clone((CtElement) m);
 			// we don't override static methods
 			if (meth.getModifiers().contains(ModifierKind.STATIC)) continue;
 			if (meth.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
 			if (meth.getModifiers().contains(ModifierKind.FINAL)) continue;
 			// no interface method
 			if (meth.getBody()==null) continue;
+			meth.getModifiers().remove(ModifierKind.NATIVE);
 
 			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
 			stmt.setValue("throw new bcornu.nullmode.DeluxeNPE("+FIELD_NAME+")");

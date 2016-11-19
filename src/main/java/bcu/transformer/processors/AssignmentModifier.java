@@ -69,7 +69,7 @@ public class AssignmentModifier extends AbstractProcessor<CtAssignment>{
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getAssigned().getType().box());
 
-				arg = new CtFieldAccessImpl();
+				arg = getFactory().Core().createFieldRead();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
 

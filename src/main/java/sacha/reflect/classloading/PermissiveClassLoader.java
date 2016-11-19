@@ -118,7 +118,10 @@ public class PermissiveClassLoader extends ClassLoader{
 						
 						FinalRemover fr = new FinalRemover(cw);
 						classReader.accept(fr, 0);
-						
+
+						if (classQualifiedName.startsWith("java.")) {
+							continue;
+						}
 						Class<?> res = defineClass(classQualifiedName, cw.toByteArray());
 						classes.put(classQualifiedName, res);
 //						System.out.println("own jar class loaded :"+name);
@@ -140,6 +143,9 @@ public class PermissiveClassLoader extends ClassLoader{
 					classReader.accept(fr, 0);
 					
 					System.err.println("class loading with final remover :"+classQualifiedName);
+					if (classQualifiedName.startsWith("java.")) {
+						continue;
+					}
 					Class<?> res = defineClass(classQualifiedName, cw.toByteArray());
 					classes.put(classQualifiedName, res);
 					return res;

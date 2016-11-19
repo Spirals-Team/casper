@@ -87,7 +87,7 @@ public class ComparizonModifier extends AbstractProcessor<CtBinaryOperator<?>>{
 //			ref.setType(argValue);
 			ref.setSimpleName("class");
 			
-			CtFieldAccess arg= getFactory().Core().createFieldAccess();
+			CtFieldAccess arg= getFactory().Core().createFieldRead();
 //			arg.setType(argValue);
 			arg.setVariable(ref);
 			

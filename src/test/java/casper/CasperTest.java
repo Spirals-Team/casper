@@ -69,8 +69,11 @@ public class CasperTest {
 	  }
 
 	@org.junit.Test
-	public void testCasper() throws Throwable {
+	public void testCasper1() throws Throwable {
 		mainTest(GhostClassType.BINARY_GHOST);
+	}
+	@org.junit.Test
+	public void testCasper2() throws Throwable {
 		mainTest(GhostClassType.SOURCE_GHOST);
 	}
 
@@ -91,9 +94,11 @@ public class CasperTest {
 		String clazz = "FooCasper";
 
 		Launcher l = new Launcher();
+		l.getModelBuilder().setBinaryOutputDirectory(new File("spooned"));
 		l.setArgs(new String[] {
 				"--source-classpath", "target/classes",
-				"-i", "src/test/resources/"+clazz+".java"
+				"-i", "src/test/resources/"+clazz+".java",
+				"--compile", "--with-imports", "--lines"
 				}
 );
 		// this processor must come first
@@ -115,6 +120,7 @@ public class CasperTest {
 		l.addProcessor("bcu.transformer.processors.ReturnModifier");
 
 		l.addProcessor("bcu.transformer.processors.ComparizonModifier");
+		l.addProcessor(bcu.transformer.processors.TargetAdder.class.getCanonicalName());
 		l.run();
 
 		// compiliing (need for --compile in Spoon, but a bug there)
@@ -177,8 +183,7 @@ public class CasperTest {
 			assertTrue(events.contains("inception: null initialized null (FooCasper.java:28)"));
 			assertTrue(events.contains("assigned null to g (FooCasper.java:14)"));
 			assertTrue(events.contains("assigned null to f (FooCasper.java:15)"));
-			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:15)"));
-			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:15)"));
+			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:19)"));
 
 		}
 
@@ -199,7 +204,7 @@ public class CasperTest {
 			assertTrue(events.contains("parameter o is null in foo5 at (FooCasper.java:38)"));
 			assertTrue(events.contains("returned null in method foo5 (FooCasper.java:39)"));
 			assertTrue(events.contains("field access on null at (FooCasper.java:43)"));
-			assertTrue(events.contains("throws NPE at FooCasper.bug2(FooCasper.java:40)"));
+			assertTrue(events.contains("throws NPE at FooCasper.bug2(FooCasper.java:44)"));
 		}
 
 		try {
@@ -243,10 +248,9 @@ public class CasperTest {
 			Throwable npe = e.getCause();
 			assertTrue(npe instanceof NullPointerException);
 			assertTrue(npe instanceof DeluxeNPE);
-			System.out.println(npe);
 			List<String> events = ((DebugInfo)FieldUtils.readField(npe, "data")).events;
 			assertTrue(events.contains("inception: null initialized null (FooCasper.java:81)"));
-			assertTrue(events.contains("throws NPE at FooCasper.literal(FooCasper.java:80)"));
+			assertTrue(events.contains("throws NPE at FooCasper.literal(FooCasper.java:83)"));
 		}
 
 		try {
@@ -259,7 +263,7 @@ public class CasperTest {
 			System.out.println(npe);
 			List<String> events = ((DebugInfo)FieldUtils.readField(npe, "data")).events;
 			assertTrue(events.contains("inception: null initialized null (FooCasper.java:87)"));
-			assertTrue(events.contains("throws NPE at FooCasper.literal2(FooCasper.java:86)"));
+			assertTrue(events.contains("throws NPE at FooCasper.literal2(FooCasper.java:89)"));
 		}
 	}
 }

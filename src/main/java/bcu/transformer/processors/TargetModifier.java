@@ -3,6 +3,8 @@ package bcu.transformer.processors;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import bcornu.nullmode.AssignResolver;
+import bcornu.nullmode.CallChecker;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
@@ -13,6 +15,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -42,7 +45,8 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			return;
 		}
 
-
+		if(element.getTarget() instanceof CtTypeAccess)
+			return;
 		if(element.getTarget()==null)
 			return;
 		if(	element.getTarget() instanceof CtSuperAccess
@@ -102,6 +106,7 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			CtInvocation invoc = getFactory().Core().createInvocation();
 			invoc.setExecutable(execref);
 			invoc.setArguments(Arrays.asList(new CtExpression[]{element.getTarget(),arg,location}));
+			invoc.setTarget(getFactory().Code().createTypeAccess(getFactory().Code().createCtTypeReference(CallChecker.class)));
 
 			CtTypeReference tmpref = getFactory().Core().clone(tmp);
 			if(!(tmpref instanceof CtArrayTypeReference)){

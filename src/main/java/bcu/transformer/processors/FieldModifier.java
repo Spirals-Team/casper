@@ -88,7 +88,7 @@ public class FieldModifier extends AbstractProcessor<CtField>{
 				ctfe.setSimpleName("class");
 				ctfe.setDeclaringType(element.getType().box());
 
-				arg = new CtFieldAccessImpl();
+				arg = getFactory().Core().createFieldRead();
 				((CtFieldAccessImpl) arg).setVariable(ctfe);
 			}
 

@@ -1,9 +1,6 @@
 package bcu.transformer.processors;
 
-import java.util.Arrays;
-
 import org.apache.commons.lang3.StringEscapeUtils;
-
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -12,7 +9,10 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtFieldAccessImpl;
+import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
+
+import java.util.Arrays;
 
 public class ParamProcessor extends AbstractProcessor<CtInvocation<?>>{
 
@@ -36,7 +36,7 @@ public class ParamProcessor extends AbstractProcessor<CtInvocation<?>>{
 			CtFieldReference ctfe = new CtFieldReferenceImpl();
 			ctfe.setSimpleName("class");
 			ctfe.setDeclaringType(tmp.box());
-			arg = new CtFieldAccessImpl();
+			arg = new CtFieldReadImpl();
 			((CtFieldAccessImpl) arg).setVariable(ctfe);
 
 

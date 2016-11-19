@@ -16,14 +16,12 @@ public class SachaDocumentationGenerator extends AbstractManualProcessor {
     		           "(generated with sacha.utils.SachaDocumentationGenerator)\n\n"+
                        "Sacha-infrastructure supports the following use cases:\n\n");
     
-    for (CtPackage pack : getFactory().Package().getAllRoots()) {
-      
-      for (CtPackage pack2 : pack.getPackages()) {
+    CtPackage pack = getFactory().Package().getRootPackage();
+    for (CtPackage pack2 : pack.getPackages()) {
       if ("sacha.mains".equals(pack2.getQualifiedName())) {
         for (CtClass c : pack2.getElements(new TypeFilter<CtClass>(CtClass.class))) {
           System.out.println("\n-------------------\n"+c.getSimpleName()+": " + c.getDocComment());
         }
-      }
       }
     }
   }
