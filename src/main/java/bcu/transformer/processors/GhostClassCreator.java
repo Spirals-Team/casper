@@ -1,5 +1,6 @@
 package bcu.transformer.processors;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +111,11 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			if (meth.getModifiers().contains(ModifierKind.STATIC)) continue;
 			if (meth.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
 			if (meth.getModifiers().contains(ModifierKind.FINAL)) continue;
+			// for some reason, the finalness of Object's methods is not available
+			if (meth.getSimpleName().equals("getClass")) continue;
+			if (meth.getSimpleName().equals("notify")) continue;
+			if (meth.getSimpleName().equals("notifyAll")) continue;
+			if (meth.getSimpleName().equals("wait")) continue;
 			// no interface method
 			if (meth.getBody()==null) continue;
 			meth.getModifiers().remove(ModifierKind.NATIVE);

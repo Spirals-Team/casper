@@ -108,13 +108,13 @@ public class CasperTest {
 
 		l.addProcessor("bcu.transformer.processors.ParamProcessor");// unghostify
 
+		l.addProcessor("bcu.transformer.processors.AssignmentModifier"); // inception assignment
 		// symptom field access and array accesses
 		l.addProcessor("bcu.transformer.processors.TargetModifier");
 
 		// inception
 		l.addProcessor("bcu.transformer.processors.NullLiteralProcessor"); // inception literal
 		l.addProcessor("bcu.transformer.processors.VariableModifier"); // inception local variable
-		l.addProcessor("bcu.transformer.processors.AssignmentModifier"); // inception assignment
 		l.addProcessor("bcu.transformer.processors.FieldModifier"); // inception default value of fields
 		l.addProcessor("bcu.transformer.processors.ArgumentsModifier"); // inception arguments
 		l.addProcessor("bcu.transformer.processors.ReturnModifier");
@@ -183,7 +183,7 @@ public class CasperTest {
 			assertTrue(events.contains("inception: null initialized null (FooCasper.java:28)"));
 			assertTrue(events.contains("assigned null to g (FooCasper.java:14)"));
 			assertTrue(events.contains("assigned null to f (FooCasper.java:15)"));
-			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:19)"));
+			assertTrue(events.contains("throws NPE at FooCasper.bug1(FooCasper.java:18)"));
 		}
 
 
@@ -203,7 +203,7 @@ public class CasperTest {
 			assertTrue(events.contains("parameter o is null in foo5 at (FooCasper.java:38)"));
 			assertTrue(events.contains("returned null in method foo5 (FooCasper.java:39)"));
 			assertTrue(events.contains("field access on null at (FooCasper.java:43)"));
-			assertTrue(events.contains("throws NPE at FooCasper.bug2(FooCasper.java:44)"));
+			assertTrue(events.contains("throws NPE at FooCasper.bug2(FooCasper.java:43)"));
 		}
 
 		try {
@@ -249,7 +249,7 @@ public class CasperTest {
 			assertTrue(npe instanceof DeluxeNPE);
 			List<String> events = ((DebugInfo)FieldUtils.readField(npe, "data")).events;
 			assertTrue(events.contains("inception: null initialized null (FooCasper.java:81)"));
-			assertTrue(events.contains("throws NPE at FooCasper.literal(FooCasper.java:83)"));
+			assertTrue(events.contains("throws NPE at FooCasper.literal(FooCasper.java:82)"));
 		}
 
 		try {
@@ -261,8 +261,8 @@ public class CasperTest {
 			assertTrue(npe instanceof DeluxeNPE);
 			System.out.println(npe);
 			List<String> events = ((DebugInfo)FieldUtils.readField(npe, "data")).events;
-			assertTrue(events.contains("inception: null initialized null (FooCasper.java:87)"));
-			assertTrue(events.contains("throws NPE at FooCasper.literal2(FooCasper.java:89)"));
+			assertTrue(events.contains("inception: assigned null to tab (FooCasper.java:87)"));
+			assertTrue(events.contains("throws NPE at FooCasper.literal2(FooCasper.java:88)"));
 		}
 	}
 }
