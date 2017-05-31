@@ -106,7 +106,8 @@ public class TargetModifier extends AbstractProcessor<CtTargetedExpression>{
 			invoc.setExecutable(execref);
 			invoc.setArguments(Arrays.asList(new CtExpression[]{element.getTarget(),arg,location}));
 			invoc.setTarget(getFactory().Code().createTypeAccess(getFactory().Code().createCtTypeReference(CallChecker.class)));
-
+			// needed to keep the right line position of the thrown exception
+			invoc.setPosition(element.getTarget().getPosition());
 			CtTypeReference tmpref = getFactory().Core().clone(tmp);
 			if(!(tmpref instanceof CtArrayTypeReference)){
 				tmpref = tmpref.box();
