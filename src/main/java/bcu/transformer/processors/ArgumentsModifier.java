@@ -118,7 +118,7 @@ public class ArgumentsModifier extends AbstractProcessor<CtMethod>{
 						arg = getFactory().Core().createLiteral();
 						arg.setType(getFactory().Type().nullType());
 					}else{
-						CtFieldReference ctfe = new CtFieldReferenceImpl();
+						CtFieldReference ctfe = getFactory().createFieldReference();
 						ctfe.setSimpleName("class");
 						ctfe.setDeclaringType(tmp.box());
 

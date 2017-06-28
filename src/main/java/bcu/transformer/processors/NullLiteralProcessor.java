@@ -46,7 +46,7 @@ public class NullLiteralProcessor extends AbstractProcessor<CtLiteral<?>>{
 		CtTypeReference tmp = getType(arg0);
 
 		CtExpression arg = null;
-		CtFieldReference ctfe = new CtFieldReferenceImpl();
+		CtFieldReference ctfe = getFactory().createFieldReference();
 		ctfe.setSimpleName("class");
 		ctfe.setDeclaringType(tmp.box());
 		arg = getFactory().Core().createFieldRead();
