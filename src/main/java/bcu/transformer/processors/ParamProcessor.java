@@ -50,6 +50,7 @@ public class ParamProcessor extends AbstractProcessor<CtInvocation<?>> {
 			invoc.setArguments(Arrays.asList(new CtExpression[]{param,arg,location}));
 			execref.setActualTypeArguments(Arrays.asList(new CtTypeReference<?>[]{tmpref}));
 
+			invoc.setParent(arg0);
 			// fail
 			// param.replace(invoc);
 
