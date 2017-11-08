@@ -34,17 +34,17 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 	public void process(CtClass arg0) {
 		System.out.println(arg0.getSimpleName());
 		// removing final
-		arg0.getModifiers().remove(ModifierKind.FINAL);
+		arg0.removeModifier(ModifierKind.FINAL);
 		for (Object m : arg0.getAllMethods()) {
 			CtMethod meth = (CtMethod)m; 
-			meth.getModifiers().remove(ModifierKind.FINAL);
+			meth.removeModifier(ModifierKind.FINAL);
 		}
 		
 		// public netsetdtypes
 		for (Object m : arg0.getNestedTypes()) {
 			CtType nested = (CtType)m; 
-			nested.getModifiers().remove(ModifierKind.PRIVATE);
-			nested.getModifiers().remove(ModifierKind.PROTECTED);
+			nested.removeModifier(ModifierKind.PRIVATE);
+			nested.removeModifier(ModifierKind.PROTECTED);
 			nested.addModifier(ModifierKind.PUBLIC);
 		}
 		
@@ -73,8 +73,8 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			}}
 			}
 			catch (SmallConstructorFound ignore) {}	
-			parent.getModifiers().remove(ModifierKind.PRIVATE);
-			parent.getModifiers().remove(ModifierKind.PROTECTED);
+			parent.removeModifier(ModifierKind.PRIVATE);
+			parent.removeModifier(ModifierKind.PROTECTED);
 			parent.addModifier(ModifierKind.PUBLIC);
 			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
 			String params = "";
@@ -118,7 +118,7 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			if (meth.getSimpleName().equals("wait")) continue;
 			// no interface method
 			if (meth.getBody()==null) continue;
-			meth.getModifiers().remove(ModifierKind.NATIVE);
+			meth.removeModifier(ModifierKind.NATIVE);
 
 			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
 			stmt.setValue("throw new bcornu.nullmode.DeluxeNPE("+FIELD_NAME+")");
