@@ -47,16 +47,32 @@ Example of modified Java code
 -----------------------------
 (excerpt from `spooned/FooCasper.java`)
 
-```
+Before:
+```java
 public FooCasper bug1() {
-    if (bcornu.nullmode.ComparizonOperator.isNotNull(new FooCasper().foo())) {
+		if (new FooCasper(1).foo() != null) {
+			throw new Error();
+		}
+		FooCasper g = new FooCasper(1).foo();
+		f=g;
+		System.out.println(f);
+		f.bar(); 		// the NPE
+		return null;
+}
+```
+
+After:
+
+```java
+public FooCasper bug1() {
+    if (isNotNull(new FooCasper().foo())) {
         throw new java.lang.Error();
     } 
-    FooCasper g = bcornu.nullmode.AssignResolver.<FooCasper>setAssigned(new FooCasper().foo(), FooCasper.class, "g (FooCasper.java:14)");
-    f = bcornu.nullmode.AssignResolver.<FooCasper>setAssigned(g, FooCasper.class, "f (FooCasper.java:15)");
-    java.lang.System.out.println(f);
+    FooCasper g = setAssigned(new FooCasper().foo(), FooCasper.class, "g (FooCasper.java:14)");
+    f = setAssigned(g, FooCasper.class, "f (FooCasper.java:15)");
+    System.out.println(f);
     f.bar();
-    return bcornu.nullmode.ReturnResolver.<FooCasper>setReturn(null, FooCasper.class, "bug1 (FooCasper.java:19)");
+    return setReturn(null, FooCasper.class, "bug1 (FooCasper.java:19)");
 }
 
 ```
