@@ -98,7 +98,7 @@ public class CasperTest {
 		l.setArgs(new String[] {
 				"--source-classpath", "target/classes",
 				"-i", "src/test/resources/"+clazz+".java",
-				"--compile", "--with-imports", "--lines"
+				"--compile", "--with-imports", "--lines", "--disable-comments"
 				}
 );
 		// this processor must come first

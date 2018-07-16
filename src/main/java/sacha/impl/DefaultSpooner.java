@@ -73,7 +73,7 @@ public class DefaultSpooner extends AbstractConfigurator implements ISpooner {
 			tmp = tmp.substring(0, tmp.length()-1);
 			args.add(tmp);
 		}
-		
+		args.add("--disable-comments");
 
 		if(outputFolder != null){
 			args.add("-o");
