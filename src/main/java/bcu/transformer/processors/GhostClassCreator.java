@@ -1,5 +1,6 @@
 package bcu.transformer.processors;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -119,6 +121,12 @@ public class GhostClassCreator extends AbstractProcessor<CtClass> {
 			// no interface method
 			if (meth.getBody()==null) continue;
 			meth.removeModifier(ModifierKind.NATIVE);
+			// necessary to run on Java 11
+			for (CtAnnotation ann: new ArrayList<>(meth.getAnnotations())) {
+				if ("HotSpotIntrinsicCandidate".equals(ann.getAnnotationType().getSimpleName())) {
+					meth.removeAnnotation(ann);
+				}
+			}
 
 			CtCodeSnippetStatement stmt = getFactory().Core().createCodeSnippetStatement();
 			stmt.setValue("throw new bcornu.nullmode.DeluxeNPE("+FIELD_NAME+")");

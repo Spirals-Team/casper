@@ -11,10 +11,10 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnnotationRemapper;
+import org.objectweb.asm.commons.FieldRemapper;
+import org.objectweb.asm.commons.MethodRemapper;
 import org.objectweb.asm.commons.Remapper;
-import org.objectweb.asm.commons.RemappingAnnotationAdapter;
-import org.objectweb.asm.commons.RemappingFieldAdapter;
-import org.objectweb.asm.commons.RemappingMethodAdapter;
 
 @SuppressWarnings("deprecation")
 public class NullClassCreator extends ClassVisitor implements Opcodes{
@@ -245,17 +245,17 @@ public class NullClassCreator extends ClassVisitor implements Opcodes{
     }
 
     protected FieldVisitor createRemappingFieldAdapter(FieldVisitor fv) {
-        return new RemappingFieldAdapter(fv, remapper);
+        return new FieldRemapper(fv, remapper);
     }
 
     protected MethodVisitor createRemappingMethodAdapter(int access,
             String newDesc, MethodVisitor mv) {
-        return new RemappingMethodAdapter(access, newDesc, mv, remapper);
+        return new MethodRemapper(mv, remapper);
     }
 
     protected AnnotationVisitor createRemappingAnnotationAdapter(
             AnnotationVisitor av) {
-        return new RemappingAnnotationAdapter(av, remapper);
+        return new AnnotationRemapper(av, remapper);
     }
 
 //    private static Pattern allParamsPattern = Pattern.compile("(\\(.*?\\))");

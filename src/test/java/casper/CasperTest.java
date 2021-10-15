@@ -64,6 +64,10 @@ public class CasperTest {
 	    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null,
 	        null, compilationUnits);
 	    boolean success = task.call();
+	    if (success == false) {
+			System.out.println(diagnostics.getDiagnostics());
+		}
+
 	    fileManager.close();
 	    System.out.println("compilation success: " + success);
 	  }
