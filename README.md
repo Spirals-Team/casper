@@ -3,8 +3,6 @@ Casper
 
 A tool for finding the root cause of null pointer exceptions through causality traces
 
-[![Build Status](https://travis-ci.org/Spirals-Team/casper.svg?branch=master)](https://travis-ci.org/Spirals-Team/casper)
-
 Casper: Automatic Tracking of Null Dereferences to Inception with Causality Traces (Benoit Cornu, Earl T. Barr, Martin Monperrus and Lionel Seinturier), In Journal of Systems and Software, Elsevier, 2016.
 
 ```
