@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.tools.DiagnosticCollector;
@@ -61,7 +62,8 @@ public class CasperTest {
 	    StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 	    Iterable<? extends JavaFileObject> compilationUnits = fileManager
 	        .getJavaFileObjects(new File("./spooned").listFiles());
-	    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null,
+		final Iterable<String> options = Arrays.asList("--add-exports","java.base/jdk.internal.vm.annotation=ALL-UNNAMED");
+		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options,
 	        null, compilationUnits);
 	    boolean success = task.call();
 	    if (success == false) {
@@ -70,6 +72,9 @@ public class CasperTest {
 
 	    fileManager.close();
 	    System.out.println("compilation success: " + success);
+		if (!success) {
+			fail("cannot compile the class");
+		}
 	  }
 
 	@org.junit.Test

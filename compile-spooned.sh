@@ -1,3 +1,3 @@
 #!/bin/sh
 mkdir -p spooned-classes
-javac  -cp target/classes -d spooned spooned/*.java
+javac --add-exports java.base/jdk.internal.vm.annotation=ALL-UNNAMED -cp target/classes -d spooned spooned/*.java

@@ -74,3 +74,7 @@ public FooCasper bug1() {
 }
 
 ```
+
+Notes:
+
+* Update for support with Java 17: need to expose private APIs at compile time and runtime (`--add-exports java.base/jdk.internal.vm.annotation=ALL-UNNAMED`)
